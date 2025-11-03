@@ -12,9 +12,90 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+// =====================================================
+//  MODELOS
+// =====================================================
+
+// Usuário
+model Usuario {
+  id              Int             @id @default(autoincrement())
+  nome            String
+  cpf             String          @unique
+  email           String          @unique
+  telefone        String?
+  endereco        String?
+  dataCadastro    DateTime        @default(now())
+
+  // Relacionamentos
+  emprestimos     Emprestimo[]
+
+  @@map("usuarios")
+}
+
+// Livro
+model Livro {
+  id                  Int               @id @default(autoincrement())
+  titulo              String
+  autor               String
+  editora             String?
+  anoPublicacao       Int?
+  isbn                String?           @unique
+  categoria           String?
+  quantidadeTotal     Int               @default(1)
+  quantidadeDisponivel Int              @default(1)
+
+  // Relacionamentos
+  itensEmprestimo     ItensEmprestimo[]
+
+  @@map("livros")
+}
+
+// Empréstimo
+model Emprestimo {
+  id                    Int               @id @default(autoincrement())
+  usuarioId             Int
+  dataEmprestimo        DateTime          @default(now())
+  dataDevolucaoPrevista DateTime
+  dataDevolucaoReal     DateTime?
+  status                StatusEmprestimo  @default(ATIVO)
+
+  // Relacionamentos
+  usuario               Usuario           @relation(fields: [usuarioId], references: [id])
+  itensEmprestimo       ItensEmprestimo[]
+  multa                 Multa?
+
+  @@map("emprestimos")
+}
+
+// Enum para status do empréstimo
+enum StatusEmprestimo {
+  ATIVO
+  ATRASADO
+  DEVOLVIDO
+}
+
+// Itens do Empréstimo
+model ItensEmprestimo {
+  id            Int         @id @default(autoincrement())
+  emprestimoId  Int
+  livroId       Int
+  quantidade    Int          @default(1)
+
+  emprestimo    Emprestimo   @relation(fields: [emprestimoId], references: [id])
+  livro         Livro        @relation(fields: [livroId], references: [id])
+
+  @@map("itens_emprestimo")
+}
+
+// Multa
+model Multa {
+  id             Int         @id @default(autoincrement())
+  emprestimoId   Int         @unique
+  valor          Decimal     
+  pago           Boolean     @default(false)
+  dataPagamento  DateTime?
+
+  emprestimo     Emprestimo  @relation(fields: [emprestimoId], references: [id])
+
+  @@map("multas")
 }

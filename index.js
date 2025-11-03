@@ -1,13 +1,10 @@
 const express = require("express")
-const { userService } = require("./services/userService.js")
+const { default: userRouter } = require("./routes/userRoutes.js")
 const server = express()
 
 const port = 3333
 
-server.get("/users", async (req, res)=>{
-    const users = await userService.getAllUser()
-    res.json(users)
-})
+server.use("/users", userRouter)
 
 
 server.listen(port, ()=>{
