@@ -27,6 +27,7 @@ export const userService = {
             where: {id: Number(id)},
             data
         })
+        return response
     }
     
     
