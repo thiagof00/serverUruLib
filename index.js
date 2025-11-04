@@ -2,11 +2,10 @@ const express = require("express")
 const { default: userRouter } = require("./routes/userRoutes.js")
 const server = express()
 
-const port = 3333
-
+server.use(express.json());
 server.use("/users", userRouter)
 
 
-server.listen(port, ()=>{
+server.listen(process.env.PORT, ()=>{
     console.log("Running server on 3333...")
 })
