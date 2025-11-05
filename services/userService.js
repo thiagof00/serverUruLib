@@ -1,4 +1,3 @@
-import { response } from "express"
 import usePrisma from "../prisma/client.js"
 
 
