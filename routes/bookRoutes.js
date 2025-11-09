@@ -38,11 +38,14 @@ bookRouter.delete('/:id', async (req,res)=>{
     try{
         const id = req.params.id
         const book = booksService.deleteBook(id) 
-        if(!book){
-        return res.status(500).json({error: "Erro deletar o livro."})
-        }
         return res.status(201).json({message: "livro excluído."})
     }catch(err){
+        if(err.code === "P2003"){
+            return res.status(400).json({
+                error: "Não é possível deletar o livro, ele está vinculado a um empréstimo"
+            })
+        }
+        console.log("Erro ao deletar o livro: ",error)
         res.status(500).json({error: err.message})
     }
 })
